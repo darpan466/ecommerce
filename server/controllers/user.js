@@ -30,7 +30,5 @@ export const update = async (req, res) => {
     }
 };
 //
-export const purchaseList = async (req, res) => {
-    Order.find({user: })
-};
+export const purchaseList = async (req, res) => {};
 //
