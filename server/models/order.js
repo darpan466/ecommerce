@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
-import ProductsInCart from "./productsInCart.js";
 const { ObjectId } = mongoose.Schema;
 
 const orderSchema = new mongoose.Schema({
-    products: [ProductsInCart],
+    products: [{
+        type: ObjectId,
+        ref: "ProductsInCart"
+    }],
     tansaction_id: Number,
     amount: Number,
     address: String,
@@ -15,5 +17,4 @@ const orderSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 const Order = mongoose.model("Order", orderSchema);
-
 export default Order;

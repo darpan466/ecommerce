@@ -13,9 +13,12 @@ APP.use(cors());
 //
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
+import categoryRoutes from "./routes/category.js";
 //
 APP.use("/api", authRoutes);
 APP.use("/api", userRoutes);
+APP.use("/api", categoryRoutes);
+
 // port
 const PORT = process.env.PORT || 8000;
 

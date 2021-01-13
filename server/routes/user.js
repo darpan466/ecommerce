@@ -1,12 +1,12 @@
 import express from "express";
 const router = express.Router();
-import { extractToken, reauthenticate } from "../controllers/auth.js";
+import { extractToken, isAuthenticated } from "../controllers/auth.js";
 import * as user from "../controllers/user.js";
 //
-router.get("/user/:_id", extractToken, reauthenticate, user.get);
+router.get("/user/:user_id", extractToken, isAuthenticated, user.get);
 //
-router.put("/user/:_id", extractToken, reauthenticate, user.update);
+router.put("/user/:user_id", extractToken, isAuthenticated, user.update);
 //
-router.get("/orders/user/:user_id", extractToken, reauthenticate, user.purchaseList);
+router.get("/orders/user/:user_id", extractToken, isAuthenticated, user.purchaseList);
 //
 export default router;

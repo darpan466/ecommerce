@@ -42,10 +42,10 @@ export const extractToken = expressJwt({
     userProperty: "tokenIssuedTo"
 });
 
-export const reauthenticate = (req, res, next) => {
-    if(req.params._id !== req.tokenIssuedTo._id) {
-        return res.status(403).json({error: "Access Denied"});
-    }
+export const isAuthenticated = async (req, res, next) => {
+    if(req.params.user_id !== req.tokenIssuedTo._id) return res.status(403).json({error: "Access Denied"});
+    const user = await User.findById(req.params.user_id);
+    req.profile = user;
     next();
 };
 
