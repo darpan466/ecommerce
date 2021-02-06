@@ -1,27 +1,24 @@
 import React, {useState} from "react";
 import Base from "../core/Base.js";
-import { Redirect } from "react-router-dom";
 import { signIn } from "../auth/connect";
 
-const Signin = () => {
-
+const Signin = ({history}) => {
+    
     const initData = {
         email: "",
         password: "",
-        error: "",
-        success: false,
+        error: "", 
         role: ""
     };
 
     const [data, setData] = useState(initData);
 
-    const { email, password, error, success, role } = data;
+    const { email, password, error, role } = data;
 
     const handleChange = event => {
         setData({
             ...data,
             error: "",
-            success: false,
             [event.target.name]: event.target.value 
         });
     };
@@ -38,32 +35,21 @@ const Signin = () => {
             setData({
                 ...initData,
                 role: response.user.role,
-                success: true
             });
-            localStorage.setItem("user", JSON.stringify(response.user));    
+            role === 1 ? 
+            history.push("/"): 
+            history.push("/");
         }
     };
 
-    const successMessage = () => {
-        if(role === 1)
-            return <Redirect to="/" />
-        else 
-            return <Redirect to="/" />
-    }
-
-    const failureMessage = () => {
-        return (
-            <div align="center" className="text-danger">
-                {data.error}
-            </div>
-        );
-    };
-
     const message = () => {
-        let message = <></>
-        if(error) message = failureMessage();
-        if(success) message = successMessage();
-        return message; 
+        if(error) 
+            return (
+                <div align="center" className="text-danger">
+                    {data.error}
+                </div>
+            )
+        return <></>; 
     };
 
     const signInForm = () => {

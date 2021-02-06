@@ -29,6 +29,7 @@ const Signup = () => {
     const onSubmit = async event => {
         event.preventDefault();
         const response = await signUp({ name, email, password, password2 });
+
         if(response.error) {
             setData({
                 ...data, 
@@ -43,30 +44,27 @@ const Signup = () => {
         }
     };
 
-    const successMessage = () => {
-        return (
-            <div align="center" className="text-white">
-                User successfully registered !!!
-            </div>
-        );
-    };
+    const message = () => {
 
-    const failureMessage = () => {
-        return (
+        let message = <></>;
+
+        if(error) message = (
             <div align="center" className="text-danger">
                 {data.error}
             </div>
         );
-    };
 
-    const message = () => {
-        let message = <></>;
-        if(error) message = failureMessage();
-        if(success) message = successMessage();
+        if(success) message = (
+            <div align="center" className="text-white">
+                User successfully registered !!!
+            </div>
+        );
+
         return message;
     };
 
     const signUpForm = () => {
+
         return (
             <div className="row">
                 <div className="col-md-4 offset-md-4 text-left">
@@ -101,8 +99,11 @@ const Signup = () => {
     
     return (
         <Base title="Sign up page" description="A page for user to sign up!!!">
+
             {signUpForm()}
+
             {message()}
+            
         </Base>
     );
 };
