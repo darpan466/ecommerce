@@ -6,7 +6,8 @@ const productSchema = new mongoose.Schema({
         type: String,
         trim: true, 
         required: true,
-        maxlength: 32
+        minlength: 1,
+        unique: true
     },
     description: {
         type: String,
@@ -15,8 +16,8 @@ const productSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
+        min: [0, "Price should be a number greater than or equal to 0."],
         required: true,
-        maxlength: 32,
         trim: true
     },
     category: {
@@ -25,15 +26,21 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     stock: {
-        type: Number
+        type: Number,
+        min: [0, "Stock should be a number greater than or equal to 0."],
+        required: true
     },
     sold: {
         type: Number,
         default: 0
     },
-    photo: {
-        data: Buffer,
-        contentType: String
+    photoURL: {
+        type: String,
+        default: undefined
+    },
+    photoKey: {
+        type: String,
+        default: undefined
     }
 }, {timestamps: true});
 

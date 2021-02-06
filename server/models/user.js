@@ -40,11 +40,10 @@ const userSchema = new mongoose.Schema({
     }
 }, {timestamps: true});
 
-userSchema.virtual("password")
-    .set(function(password) {
+userSchema.virtual("password").set(function(password) {
         this.salt = v4();
         this.encryPassword = this.securePassword(password);
-    });
+});
 
 userSchema.methods = {
     securePassword: function(plainPassword) {

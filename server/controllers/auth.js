@@ -1,57 +1,74 @@
 import User from "../models/user.js";
-import {validationResult} from "express-validator";
+import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import expressJwt from "express-jwt"; 
-import secret from "../config.js";
-//
+import { JWTsecret as secret } from "../config.js";
+
 export const signup = async (req, res) => {
     try {
         const result = validationResult(req);
-        if(!result.isEmpty()) return res.status(400).json({"error": result.errors[0].msg});
+
+        if(!result.isEmpty()) return res.json({"error": result.errors[0].msg});
+
         const user = new User(req.body);
+        
         await user.save();
-        return res.status(201).json({"name": user.name, "email": user.email, "id": user._id});
+        
+        return res.json({"name": user.name, "email": user.email, "id": user._id});
+    
     } catch(error) {
-        return res.status(409).json({"error": "Email id is already registered"});
+
+        return res.json({"error": "Email id is already registered"});
     }
 };
-//
+
 export const signin = async (req, res) => {
     try {
         const result = validationResult(req);
-        if(!result.isEmpty()) return res.status(400).json({"error": result.errors[0].msg});
+
+        if(!result.isEmpty()) return res.json({"error": result.errors[0].msg});
+
         const user = await User.findOne({email: req.body.email});
-        if(!user.authenticate(req.body.password)) return res.status(401).json({"error": "Password is incorrect."});
+
+        if(!user) return res.json({"error": "Email Id is unregistered"});
+
+        if(!user.authenticate(req.body.password)) return res.json({"error": "Password is incorrect."});
+
         const token = jwt.sign({_id: user._id, name: user.name}, secret);
-        res.cookie("token", token, {expire: new Date() + 9999});
+        
+        res.cookie("token", token, {maxAge: 60 * 60 * 1000, httpOnly: true});
+        
         const {_id, name, email, role} = user;
-        return res.json({token, user: {_id, name, email, role}});
-        // try removing token from the body because its already present in the res.cookie
+        
+        return res.json({user: {_id, name, email, role}});
+
     } catch (error) {
-        return res.status(404).json({"error": "Email Id is unregistered"});
+        
+        return res.json({"error": "Email Id is unregistered"});
     }
 };
 
 export const signout = (req, res) => {
     res.clearCookie("token");
-    res.json({"message": "user signout successfully"});
+    return res.json({"message": "user signed out successfully"});
 };
 
-export const extractToken = expressJwt({
+export const isSignedIn = expressJwt({
     secret,
-    userProperty: "tokenIssuedTo"
+    getToken: req => req.cookies.token,
+    userProperty: "signedInAs"
 });
 
 export const isAuthenticated = async (req, res, next) => {
-    if(req.params.user_id !== req.tokenIssuedTo._id) return res.status(403).json({error: "Access Denied"});
-    const user = await User.findById(req.params.user_id);
-    req.profile = user;
+    if(req.profile._id != req.signedInAs._id) {
+        return res.json({"error": "Access Denied"});
+    }
     next();
 };
 
 export const isAdmin = (req, res, next) => {
     if(req.profile.role == 0) {
-        return res.status(403).json({error: "Admin privileges not available"});
+        return res.json({"error": "Admin privileges not available"});
     }
     next();
 };

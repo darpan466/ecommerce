@@ -1,4 +1,4 @@
-import {check} from "express-validator";
+import { check } from "express-validator";
 
 export const signup = [
     check("name").isLength({min: 1}).withMessage("Name should have atleast 1 character."),
